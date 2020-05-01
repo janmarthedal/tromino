@@ -57,13 +57,35 @@ export default class TrominoBox extends Component {
         y: this.props.initY,
         buttonDown: false
     };
+    shouldComponentUpdate(nextProps, nextState) {
+        return nextState.x !== this.state.x || nextState.y !== this.state.y;
+    }
+    checkMouse(e) {
+        const svg = this.base;
+        const rect = svg.getBoundingClientRect();
+        const cellX = Math.floor(this.props.size * (e.clientX - rect.left) / rect.width);
+        const cellY = Math.floor(this.props.size * (e.clientY - rect.top) / rect.height);
+        this.setState({ x: cellX, y: cellY });
+    }
+    handleMouseButtons(e) {
+        const leftDown = (e.buttons & 1) !== 0;
+        this.setState({ buttonDown: leftDown });
+        if (leftDown)
+            this.checkMouse(e);
+    }
+    handleMouseMove(e) {
+        if (this.state.buttonDown)
+            this.checkMouse(e);
+    }
 	render({ size }, { x, y }) {
         const strokeWidth = 0.1;
         const boxWidth = size + 2 * strokeWidth;
         const viewBox = [-strokeWidth, -strokeWidth, boxWidth, boxWidth].join(' ');
         const items = new TreeGrid(size, x, y).fill();
         return (
-            <svg viewBox={viewBox}>
+            <svg viewBox={viewBox} onMouseDown={this.handleMouseButtons.bind(this)}
+                onMouseUp={this.handleMouseButtons.bind(this)}
+                onMouseMove={this.handleMouseMove.bind(this)}>
                 <defs>
                     <path id="tromino0" d="M0 0L0 -1L1 -1L1 1L-1 1L-1 0Z" />
                     <path id="tromino1" d="M0 0L1 0L1 1L-1 1L-1 -1L0 -1Z" />
