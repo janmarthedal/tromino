@@ -1,5 +1,6 @@
 import path from 'path'
 import HtmlPlugin from 'html-webpack-plugin'
+import GoogleAnalyticsPlugin from '../plugins/google-analytics-webpack-plugin'
 
 const basePath = path.join(__dirname, '..', 'src')
 const env = process.env.NODE_ENV || 'development'
@@ -21,6 +22,9 @@ export default {
     new HtmlPlugin({
       title: 'L-Trominos',
       template: path.join(basePath, 'index.html'),
+    }),
+    new GoogleAnalyticsPlugin({
+      id: 'UA-46471633-1'
     }),
   ],
 
